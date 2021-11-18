@@ -23,6 +23,6 @@ jobs:
         run: |
           gh issue edit ${{ inputs.issue }} --add-label ${{ inputs.labels }}
       - name: add comment
-        if: ${{ inputs.comment != "" }}
+        if: ${{ inputs.comment != '' }}
         run: |
           gh issue comment ${{ inputs.issue }} --body ${{ inputs.comment }}
