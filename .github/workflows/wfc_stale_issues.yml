@@ -40,7 +40,7 @@ jobs:
         run: |
           before=`date -d '${{ inputs.hours }} hours ago' --iso-8601`T12:00:00+00:00
           echo "Getting all issues untouched since: $before"
-          issues=`gh issue list -S "-label:${{ staleLabel }} updated:<$before" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
+          issues=`gh issue list -S "-label:${{ inputs.staleLabel }} updated:<$before" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
           echo "Updating `echo $issues | wc -w` issues"
           for issue in $issues; do
             gh issue edit $issue --add-label ${{ inputs.staleLabel }} -R ${{ github.repository }}
