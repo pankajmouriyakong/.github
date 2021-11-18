@@ -27,4 +27,6 @@ jobs:
       - name: add comment
         if: ${{ inputs.comment != '' }}
         run: |
-          gh issue comment ${{ inputs.issue }} --body ${{ inputs.comment }} -R ${{ github.repository }}
+          gh issue comment ${{ inputs.issue }} -R ${{ github.repository }} --body $COMMENT
+        env:
+          COMMENT: ${{ inputs.comment }}
