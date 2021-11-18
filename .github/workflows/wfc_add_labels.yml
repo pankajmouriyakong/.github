@@ -16,6 +16,8 @@ on:
 
 jobs:
   add_labels:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     name: Mark ticket to triage
     runs-on: ubuntu-latest
     steps:
