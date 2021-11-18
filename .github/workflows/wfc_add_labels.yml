@@ -23,8 +23,8 @@ jobs:
     steps:
       - name: add labels
         run: |
-          gh issue edit ${{ inputs.issue }} --add-label ${{ inputs.labels }}
+          gh issue edit ${{ inputs.issue }} --add-label ${{ inputs.labels }} -R ${{ github.repository }}
       - name: add comment
         if: ${{ inputs.comment != '' }}
         run: |
-          gh issue comment ${{ inputs.issue }} --body ${{ inputs.comment }}
+          gh issue comment ${{ inputs.issue }} --body ${{ inputs.comment }} -R ${{ github.repository }}
