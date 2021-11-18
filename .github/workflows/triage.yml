@@ -7,6 +7,6 @@ on:
 
 jobs:
   add_triage_label:
-    uses: ./workflows/wfc_add_labels.yml
+    uses: kumahq/.github/workflows/wfc_add_labels.yml@main
     with:
       issue: ${{ github.event.issue.number }}
