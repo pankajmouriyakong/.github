@@ -42,7 +42,7 @@ on:
 
 jobs:
   open:
-    if: ${{ github.event.action == "reopened" || github.event.action == "opened" }}
+    if: ${{ github.event.action == 'reopened' || github.event.action == 'opened' }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
         env:
           COMMENT: ${{ inputs.openComment }}
   autoclose:
-    if: ${{ github.event.action == "labeled" && contains(inputs.autocloseLabels, github.event.label.name) }}
+    if: ${{ github.event.action == 'labeled' && contains(inputs.autocloseLabels, github.event.label.name) }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
