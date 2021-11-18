@@ -71,7 +71,7 @@ jobs:
         run: |
           gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }}
   periodicCleanup:
-    if: ${{ github.event.inputs || github.event.schedule }}
+    if: ${{ github.event.workflow || github.event.schedule }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
