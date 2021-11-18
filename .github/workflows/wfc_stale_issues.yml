@@ -29,13 +29,14 @@ jobs:
   lifecycle:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    name: Mark tickets as staled
     runs-on: ubuntu-latest
     steps:
       - name: mark issues as stale
         run: |
-          before=`date -d '${{ inputs.hours }} hours ago' --iso-8601`
+          before=`date -d '${{ inputs.hours }} hours ago' --iso-8601`T12:00:00+00:00
+          echo "Getting all issues untouched since: $before"
           issues=`gh issue list -S "updated:<$before" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
+          echo "Updating `echo $issues | wc -w` issues"
           for issue in $issues; do
             gh issue edit $issue --add-label ${{ inputs.labels }} -R ${{ github.repository }}
             gh issue comment $issue -R ${{ github.repository }} --body "$COMMENT"
@@ -45,6 +46,7 @@ jobs:
       - name: close issues marked as rotten
         run: |
           issues=`gh issue list -l ${{ inputs.rottenlabel }} -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
+          echo "Updating `echo $issues | wc -w` issues"
           for issue in $issues; do
             gh issue comment $issue -R ${{ github.repository }} --body "Automatically closing rotten issues"
             gh issue close $issue -R ${{ github.repository }}
