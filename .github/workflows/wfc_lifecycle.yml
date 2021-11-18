@@ -1,0 +1,101 @@
+on:
+  workflow_call:
+    inputs:
+      openLabels:
+        description: "A comma separated list of labels to add"
+        type: string
+        default: "triage/pending"
+        required: false
+      openComment:
+        type: string
+        description: "An optional comment to add to the issue"
+        default: ""
+        required: false
+      autocloseLabels:
+        description: "A comma separated list of labels that indicates an issue should be closed"
+        type: string
+        required: false
+        default: "triage/rotten,triage/duplicated,triage/not-reproducible"
+      autocloseComment:
+        type: string
+        description: "A comment to add to the issue when autoclosing"
+        default: |
+          Automatically closing the issue due to having one of the "closed state label".
+        required: false
+      daysBeforeStale:
+        description: "The number of days an issue has to be unmodified before being applied the labels"
+        type: number
+        default: 30
+        required: false
+      staleLabel:
+        description: "A label to add when an issue is staled"
+        type: string
+        default: "triage/stale"
+        required: false
+      staleComment:
+        type: string
+        description: "A comment to add to the issue when marking as stale"
+        default: |
+          This issue was inactive for 30 days it will be reviewed in the next triage meeting and might be closed.
+          If you think this issue is still relevant please comment on it promptly or attend the next triage meeting.
+        required: false
+
+jobs:
+  open:
+    if: ${{ github.event.action == "reopened" || github.event.action == "opened" }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: add labels
+        run: |
+          gh issue edit ${{ github.event.issue.number }} --add-label ${{ inputs.openLabels }} -R ${{ github.repository }}
+      - name: add comment
+        if: ${{ inputs.openComment }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} -R ${{ github.repository }} --body "$COMMENT"
+        env:
+          COMMENT: ${{ inputs.openComment }}
+  autoclose:
+    if: ${{ github.event.action == "labeled" && contains(inputs.autocloseLabels, github.event.label.name) }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: comment on issue
+        run: |
+          gh issue comment ${{ github.event.issue.number }} -R ${{ github.repository }} --body "$COMMENT"
+        env:
+          COMMENT: ${{ inputs.autocloseComment }}
+      - name: close issues marked with label
+        run: |
+          gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }}
+  periodicCleanup:
+    if: ${{ github.event.inputs || github.event.schedule }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: mark issues as stale
+        run: |
+          before=`date -d '${{ inputs.daysBeforeStale }} days ago' --iso-8601`
+          echo "Getting all issues untouched since: $before"
+          issues=`gh issue list -S "-label:${{ inputs.staleLabel }} updated:<$before" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
+          echo "Updating `echo $issues | wc -w` issues"
+          for issue in $issues; do
+            gh issue edit $issue --add-label ${{ inputs.staleLabel }} -R ${{ github.repository }}
+            gh issue comment $issue -R ${{ github.repository }} --body "$COMMENT"
+          done
+        env:
+          COMMENT: ${{ inputs.staleComment }}
+      - name: close issues marked with label
+        if: ${{ inputs.autocloseLabels }}
+        run: |
+          issues=`gh issue list -S "label:${{ inputs.autocloseLabels }}" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
+          echo "Auto closing issues `echo $issues | wc -w` issues"
+          for issue in $issues; do
+            gh issue comment $issue -R ${{ github.repository }} --body "$COMMENT"
+            gh issue close $issue -R ${{ github.repository }}
+          done
+        env:
+          COMMENT: ${{ inputs.autocloseComment }}

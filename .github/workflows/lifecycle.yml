@@ -3,9 +3,12 @@ on:
   schedule:
     - cron: 0 8 * * *
   workflow_dispatch:
+  issues:
+    types:
+      - reopened
+      - opened
+      - labeled
 
 jobs:
   lifecycle:
-    uses: kumahq/.github/.github/workflows/wfc_stale_issues.yml@main
-    with:
-      hours: 1
+    uses: kumahq/.github/.github/workflows/wfc_lifecycle.yml@main
