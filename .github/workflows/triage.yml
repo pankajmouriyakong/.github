@@ -10,6 +10,3 @@ jobs:
     uses: kumahq/.github/.github/workflows/wfc_add_labels.yml@main
     with:
       issue: ${{ github.event.issue.number }}
-      labels: triage,invalid
-      comment: |
-        Interesting we'll triage that at "soe" point! `fewfew`
