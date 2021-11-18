@@ -9,10 +9,12 @@ on:
         description: "A comma separated list of labels to add"
         type: string
         default: "triage/pending"
+        required: false
       comment:
         type: string
         description: "An optional comment to add to the issue"
         default: ""
+        required: false
 
 jobs:
   add_labels:

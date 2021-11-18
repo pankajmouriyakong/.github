@@ -1,0 +1,9 @@
+name: IssueLifecycle
+on:
+  schedule:
+    - cron: 0 8 * * *
+  repository_dispatch:
+
+jobs:
+  add_triage_label:
+    uses: kumahq/.github/.github/workflows/wfc_stale_issues.yml@main

@@ -1,4 +1,4 @@
-name: Label issues to triage
+name: MarkForTriage
 on:
   issues:
     types:

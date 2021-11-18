@@ -1,0 +1,51 @@
+# gh issue list -S "updated:`date -d '30 days ago' --iso-8601`" -s open
+on:
+  workflow_call:
+    inputs:
+      days:
+        description: "The number of days an issue has to be unmodified before being applied the labels"
+        type: number
+        default: 30
+        required: false
+      labels:
+        description: "A comma separated list of labels to add"
+        type: string
+        default: "triage/stale"
+        required: false
+      rottenLabel:
+        description: "The label that indicates that issues are rotten"
+        type: string
+        required: false
+        default: "triage/rotten"
+      comment:
+        type: string
+        description: "An optional comment to add to the issue"
+        default: |
+          This issue was inactive for 30days it will be reviewed in the next triage meeting and might be closed.
+          If you think this issue is still relevant please comment on it promptly or attend the next triage meeting.
+        required: false
+
+jobs:
+  lifecycle:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    name: Mark tickets as staled
+    runs-on: ubuntu-latest
+    steps:
+      - name: mark issues as stale
+        run: |
+          before=`date -d '${{ inputs.days }} days ago' --iso-8601`
+          issues=`gh issue list -S "updated:<$before" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
+          for issue in $issues; do
+            gh issue edit $issue --add-label ${{ inputs.labels }} -R ${{ github.repository }}
+            gh issue comment $issue -R ${{ github.repository }} --body "$COMMENT"
+          done
+        env:
+          COMMENT: ${{ inputs.comment }}
+      - name: close issues marked as rotten
+        run: |
+          issues=`gh issue list -l ${{ inputs.rottenlabel }} -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
+          for issue in $issues; do
+            gh issue comment $issue -R ${{ github.repository }} --body "Automatically closing rotten issues"
+            gh issue close $issue -R ${{ github.repository }}
+          done
