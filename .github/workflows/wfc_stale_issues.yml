@@ -6,8 +6,8 @@ on:
         type: number
         default: 720
         required: false
-      staleLabels:
-        description: "A comma separated list of labels to add"
+      staleLabel:
+        description: "A label to add when an issue is staled"
         type: string
         default: "triage/stale"
         required: false
@@ -40,10 +40,10 @@ jobs:
         run: |
           before=`date -d '${{ inputs.hours }} hours ago' --iso-8601`T12:00:00+00:00
           echo "Getting all issues untouched since: $before"
-          issues=`gh issue list -S "updated:<$before" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
+          issues=`gh issue list -S "-label:${{ staleLabel }} updated:<$before" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
           echo "Updating `echo $issues | wc -w` issues"
           for issue in $issues; do
-            gh issue edit $issue --add-label ${{ inputs.staleLabels }} -R ${{ github.repository }}
+            gh issue edit $issue --add-label ${{ inputs.staleLabel }} -R ${{ github.repository }}
             gh issue comment $issue -R ${{ github.repository }} --body "$COMMENT"
           done
         env:
