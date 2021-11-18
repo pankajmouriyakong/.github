@@ -1,0 +1,11 @@
+name: Feature
+description: File a new Feature request
+labels: ["kind/feature", "triage/pending"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: Tell us what you want!
+    validations:
+      required: true
