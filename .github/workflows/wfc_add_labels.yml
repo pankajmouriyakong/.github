@@ -19,5 +19,10 @@ jobs:
     name: Mark ticket to triage
     runs-on: ubuntu-latest
     steps:
-      - run: "gh issue edit ${{ inputs.issue }} --add-label ${{ inputs.labels }}"
-      - run: "[[  ${{ inputs.comment }} != "" ]] && gh issue comment ${{ inputs.issue }} --body '${{ inputs.comment }}'"
+      - name: add labels
+        run: |
+          gh issue edit ${{ inputs.issue }} --add-label ${{ inputs.labels }}
+      - name: add comment
+        if: ${{ inputs.comment != "" }}
+        run: |
+          gh issue comment ${{ inputs.issue }} --body ${{ inputs.comment }}
