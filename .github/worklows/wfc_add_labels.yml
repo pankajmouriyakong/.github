@@ -1,0 +1,23 @@
+on:
+  workflow_call:
+    inputs:
+      issue:
+        description: "The issue to modify"
+        type: number
+        required: true
+      labels:
+        description: "A comma separated list of labels to add"
+        type: string
+        default: "triage/pending"
+      comment:
+        type: string
+        description: "An optional comment to add to the issue"
+        default: ""
+
+jobs:
+  add_labels:
+    name: Mark ticket to triage
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh issue edit ${{ inputs.issue }} --add-label ${{ inputs.labels }}
+      - run: "[[  ${{ inputs.comment }} != "" ]] && gh issue comment ${{ inputs.issue }} --body '${{ inputs.comment }}'"

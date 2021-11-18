@@ -1,0 +1,12 @@
+name: Label issues to triage
+on:
+  issues:
+    types:
+      - reopened
+      - opened
+
+jobs:
+  add_triage_label:
+    uses: ./workflows/wfc_add_labels.yml
+    with:
+      issue: ${{ github.event.issue.number }}
