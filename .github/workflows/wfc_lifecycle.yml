@@ -99,3 +99,22 @@ jobs:
           done
         env:
           COMMENT: ${{ inputs.autocloseComment }}
+      - uses: actions/checkout@v2
+      - name: install gh groomer
+        run: |
+          if [[ `git diff --name-only  "@{24 hours ago}" "@{now}" -- org_labels.yml labels.yml`  ]]; then
+            echo "Label files didn't change skipping label sync"
+          fi
+
+          gh release download -R lahabana/github-pm-groomer  -p '*Linux_x86*'
+          tar -xvf github-pm-groomer_0.0.1_Linux_x86_64.tar.gz
+          if [[ -f org_labels.yml ]]; then
+            echo "Syncing org labels"
+            ./github-pm-groomer label-sync -p org_labels.yml -r ${{ github.repository }}
+          fi
+          if [[ -f labels.yml ]]; then
+            echo "Syncing repo labels"
+            ./github-pm-groomer label-sync -p labels.yml -r ${{ github.repository }}
+          fi
+        env:
+          GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
