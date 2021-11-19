@@ -1,21 +1,24 @@
 default:
   labels:
-    - color: d3e2f0
+    - color: ffaa00
       name: triage/pending
       description: "This issue will be looked at on the next triage meeting"
-    - color: d3e2f0
+    - color: ffaa00
       name: triage/accepted
       description: "The issue was reviewed and is complete enough to start working on it"
-    - color: d3e2f0
+    - color: ffaa00
       name: triage/needs-information
       description: "Reviewed and some extra information was asked to the reporter"
-    - color: d3e2f0
+    - color: ffaa00
       name: triage/stale
       description: "Inactive for some time. It will be triaged again"
-    - color: d3e2f0
+    - color: ffaa00
       name: triage/rotten
       description: "closed due to lack of information for too long, rejected feature..."
-    - color: d3e2f0
+    - color: ffaa00
+      name: triage/duplicated
+      description: "already exists"
+    - color: ffaa00
       name: triage/not-reproducible
       description: "Couldn't reproduce this issue. If you add information remove this label and reopen the issue"
     - color: c7def8
@@ -66,4 +69,6 @@ default:
     - name: question
       delete: true
     - name: wontfix
+      delete: true
+    - name: triage
       delete: true

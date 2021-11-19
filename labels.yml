@@ -1,5 +1,4 @@
 default:
   labels:
-    - color: d3e2f0
-      name: test
-      description: "Testing a label"
+    - name: test
+      delete: true
