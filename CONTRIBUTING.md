@@ -65,7 +65,7 @@ don’t know where to start or can't find a suitable issue, you can ask in the #
 Once you see an issue that you'd like to work on, please post a comment saying
 that you want to work on it. Something like "I want to work on this" is fine.
 
-You might want to familiarize yourself with our [Triage policy](https://github.com/kumahq/.github/PROJECT_MANAGEMENT.md#triage).
+You might want to familiarize yourself with our [Triage policy](https://github.com/kumahq/.github/blob/main/PROJECT_MANAGEMENT.md#triage).
 
 ## Ask for Help
 
