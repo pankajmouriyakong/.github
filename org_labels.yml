@@ -5,19 +5,19 @@ default:
       description: "This issue will be looked at on the next triage meeting"
     - color: d3e2f0
       name: triage/accepted
-      description: "The issue was reviewed and is complete enough to start working on it. If it's assigned someone is working on it. If it's closed it's likely merged."
+      description: "The issue was reviewed and is complete enough to start working on it"
     - color: d3e2f0
       name: triage/needs-information
-      description: "The issue was reviewed and some extra information was asked to the reporter. Once the information is added add replace this label with triage/pending to the issue."
+      description: "Reviewed and some extra information was asked to the reporter"
     - color: d3e2f0
       name: triage/stale
-      description: "This issue was inactive for some time. At the next triage meeting it will be either marked as rotten or simply triaged again."
+      description: "Inactive for some time. It will be triaged again"
     - color: d3e2f0
       name: triage/rotten
-      description: "This issue was reviewed and we're not going to work on it (This happens on issues that have lacked information for too long, rejected features...)."
+      description: "closed due to lack of information for too long, rejected feature..."
     - color: d3e2f0
       name: triage/not-reproducible
-      description: "We couldn't reproduce this issue. If you add more information remove this label and reopen the issue."
+      description: "Couldn't reproduce this issue. If you add information remove this label and reopen the issue"
     - color: c7def8
       name: kind/bug
       description: "A bug"
