@@ -43,7 +43,7 @@ on:
         type: string
         description: "The list of files to sync from the community repo"
         required: false
-        default: "CODE_OF_CONDUCT.md,LICENSE,org_labels.yml,workflows/lifecycle.yml"
+        default: "CODE_OF_CONDUCT.md,LICENSE,org_labels.yml,.github/workflows/lifecycle.yml"
 
 jobs:
   open:
@@ -118,7 +118,7 @@ jobs:
           fi
 
           gh release download -R lahabana/github-pm-groomer  -p '*Linux_x86*'
-          tar -xvf github-pm-groomer_0.0.1_Linux_x86_64.tar.gz
+          tar -xf github-pm-groomer_0.0.1_Linux_x86_64.tar.gz
           if [[ -f org_labels.yml ]]; then
             echo "Syncing org labels"
             ./github-pm-groomer label-sync -p org_labels.yml -r ${{ github.repository }}
