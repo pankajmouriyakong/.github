@@ -124,7 +124,7 @@ jobs:
         env:
           GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   syncFilesFromGithub:
-    if: ${{ (github.event.workflow || github.event.schedule) && github.repository != "kumahq/.github" }}
+    if: ${{ (github.event.workflow || github.event.schedule) && github.repository != 'kumahq/.github' }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
