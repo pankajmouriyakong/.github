@@ -1,4 +1,2 @@
 default:
-  labels:
-    - name: test
-      delete: true
+  labels: []

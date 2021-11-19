@@ -1,3 +1,4 @@
+name: project-lifecycle
 on:
   schedule:
     - cron: 0 8 * * *
