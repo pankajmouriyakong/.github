@@ -39,6 +39,11 @@ on:
           This issue was inactive for 30 days it will be reviewed in the next triage meeting and might be closed.
           If you think this issue is still relevant please comment on it promptly or attend the next triage meeting.
         required: false
+      filesToSync:
+        type: string
+        description: "The list of files to sync from the community repo"
+        required: false
+        default: "CODE_OF_CONDUCT.md,LICENSE,org_labels.yml,workflows/lifecycle.yml"
 
 jobs:
   open:
@@ -118,3 +123,30 @@ jobs:
           fi
         env:
           GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  syncFilesFromGithub:
+    if: ${{ (github.event.workflow || github.event.schedule) && github.repository != "kumahq/.github" }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Sync files from kumahq/.github
+        run: |
+          for f in `echo '${{ inputs.filesToSync }}' | tr "," " "`; do
+            echo "updating ${f}"
+            gh api /repos/kumahq/.github/contents/${f}  -t '{{.content}}' | base64 -d > ${f}
+          done
+      - name: "Create Pull Request"
+        uses: peter-evans/create-pull-request@v3
+        id: newPR
+        with:
+          path: .
+          commit-message: "Updating community files"
+          committer: GitHub <noreply@github.com>
+          author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          signoff: true
+          branch: chore/upgrade-githubfiles
+          delete-branch: true
+          title: "Updating files from kumahq/.github"
+          body: "Update files from kumahq/.github repo"
+          draft: false
