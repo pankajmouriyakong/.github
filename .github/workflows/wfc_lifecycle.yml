@@ -140,20 +140,19 @@ jobs:
       - name: Sync files from kumahq/.github
         run: |
           for f in `echo '${{ inputs.filesToSync }}' | tr "," " "`; do
-            echo "updating ${f}"
-            gh api /repos/kumahq/.github/contents/${f}  -t '{{.content}}' | base64 -d > ${f}
+            gh api /repos/kumahq/.github/contents/${f}  -t '{{.content}}' | base64 -d >> ${f}
           done
       - name: "Create Pull Request"
         uses: peter-evans/create-pull-request@v3
         id: newPR
         with:
           path: .
-          commit-message: "Updating community files"
+          commit-message: "Automatic sync of files in kumahq/.github"
           committer: GitHub <noreply@github.com>
           author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
           signoff: true
           branch: chore/upgrade-githubfiles
           delete-branch: true
-          title: "Updating files from kumahq/.github"
-          body: "Update files from kumahq/.github repo"
+          title: "Automatic sync of files from kumahq/.github"
+          body: "Automatic sync of files from https://github.com/kumahq/.github."
           draft: false
