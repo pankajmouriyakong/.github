@@ -153,6 +153,6 @@ jobs:
           signoff: true
           branch: chore/upgrade-githubfiles
           delete-branch: true
-          title: "Automatic sync of files from kumahq/.github"
+          title: "ci(.github): automatic sync of files in kumahq/.github"
           body: "Automatic sync of files from https://github.com/kumahq/.github."
           draft: false
