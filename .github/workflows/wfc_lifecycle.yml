@@ -147,7 +147,7 @@ jobs:
         id: newPR
         with:
           path: .
-          commit-message: "Automatic sync of files in kumahq/.github"
+          commit-message: "ci(.github): automatic sync of files in kumahq/.github"
           committer: GitHub <noreply@github.com>
           author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
           signoff: true
