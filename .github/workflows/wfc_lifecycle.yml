@@ -140,7 +140,7 @@ jobs:
       - name: Sync files from kumahq/.github
         run: |
           for f in `echo '${{ inputs.filesToSync }}' | tr "," " "`; do
-            gh api /repos/kumahq/.github/contents/${f}  -t '{{.content}}' | base64 -d >> ${f}
+            gh api /repos/kumahq/.github/contents/${f}  -t '{{.content}}' | base64 -d > ${f}
           done
       - name: "Create Pull Request"
         uses: peter-evans/create-pull-request@v3
