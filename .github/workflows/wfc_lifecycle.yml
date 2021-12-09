@@ -43,7 +43,7 @@ on:
         type: string
         description: "The list of files to sync from the community repo"
         required: false
-        default: "CODE_OF_CONDUCT.md,LICENSE,org_labels.yml,.github/workflows/lifecycle.yml"
+        default: "CODE_OF_CONDUCT.md,LICENSE,SECURITY.md,org_labels.yml,.github/workflows/lifecycle.yml"
 
 jobs:
   open:
