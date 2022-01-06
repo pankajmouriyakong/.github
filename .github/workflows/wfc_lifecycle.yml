@@ -62,18 +62,20 @@ jobs:
         env:
           COMMENT: ${{ inputs.openComment }}
   autoclose:
-    if: ${{ github.event.action == 'labeled' && contains(inputs.autocloseLabels, github.event.label.name) && github.event.issue.state != 'closed' }}
+    if: ${{ github.event.action == 'labeled' && contains(inputs.autocloseLabels, github.event.label.name) }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - name: comment on issue
+        if: ${{ github.event.issue.state != 'closed' }}
         run: |
           gh issue comment ${{ github.event.issue.number }} -R ${{ github.repository }} --body "$COMMENT"
         env:
           COMMENT: ${{ inputs.autocloseComment }}
       - name: close issues marked with label
         run: |
+          gh issue edit ${{ github.event.issue.number }} --remove-label ${{ input.openLabels }} -R ${{ github.repository }}
           gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }}
   periodicCleanup:
     needs: labelSync
@@ -100,6 +102,7 @@ jobs:
           issues=`gh issue list -S "label:${{ inputs.autocloseLabels }}" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
           echo "Auto closing issues `echo $issues | wc -w` issues"
           for issue in $issues; do
+            gh issue edit $issue --remove-label ${{ input.openLabels }} -R ${{ github.repository }}
             gh issue comment $issue -R ${{ github.repository }} --body "$COMMENT"
             gh issue close $issue -R ${{ github.repository }}
           done
