@@ -75,7 +75,7 @@ jobs:
           COMMENT: ${{ inputs.autocloseComment }}
       - name: close issues marked with label
         run: |
-          gh issue edit ${{ github.event.issue.number }} --remove-label ${{ input.openLabels }} -R ${{ github.repository }}
+          gh issue edit ${{ github.event.issue.number }} --remove-label ${{ inputs.openLabels }} -R ${{ github.repository }}
           gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }}
   periodicCleanup:
     needs: labelSync
@@ -102,7 +102,7 @@ jobs:
           issues=`gh issue list -S "label:${{ inputs.autocloseLabels }}" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
           echo "Auto closing issues `echo $issues | wc -w` issues"
           for issue in $issues; do
-            gh issue edit $issue --remove-label ${{ input.openLabels }} -R ${{ github.repository }}
+            gh issue edit $issue --remove-label ${{ inputs.openLabels }} -R ${{ github.repository }}
             gh issue comment $issue -R ${{ github.repository }} --body "$COMMENT"
             gh issue close $issue -R ${{ github.repository }}
           done
