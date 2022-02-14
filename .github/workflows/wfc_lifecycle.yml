@@ -6,6 +6,11 @@ on:
         type: string
         default: "triage/pending"
         required: false
+      acceptedLabel:
+        description: "The label to use when an issue is accepted work"
+        type: string
+        default: "triage/accepted"
+        required: false
       openComment:
         type: string
         description: "An optional comment to add to the issue"
@@ -47,7 +52,7 @@ on:
 
 jobs:
   open:
-    if: ${{ github.event.action == 'reopened' || github.event.action == 'opened' }}
+    if: (github.event.action == 'reopened' || github.event.action == 'opened') && !contains(github.event.issue.labels.*.name, ${{ inputs.acceptedLabel }} )
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
@@ -56,19 +61,19 @@ jobs:
         run: |
           gh issue edit ${{ github.event.issue.number }} --add-label ${{ inputs.openLabels }} -R ${{ github.repository }}
       - name: add comment
-        if: ${{ inputs.openComment }}
+        if: inputs.openComment
         run: |
           gh issue comment ${{ github.event.issue.number }} -R ${{ github.repository }} --body "$COMMENT"
         env:
           COMMENT: ${{ inputs.openComment }}
   autoclose:
-    if: ${{ github.event.action == 'labeled' && contains(inputs.autocloseLabels, github.event.label.name) }}
+    if: github.event.action == 'labeled' && contains(inputs.autocloseLabels, github.event.label.name)
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - name: comment on issue
-        if: ${{ github.event.issue.state != 'closed' }}
+        if: github.event.issue.state != 'closed'
         run: |
           gh issue comment ${{ github.event.issue.number }} -R ${{ github.repository }} --body "$COMMENT"
         env:
@@ -79,7 +84,7 @@ jobs:
           gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }}
   periodicCleanup:
     needs: labelSync
-    if: ${{ github.event.workflow || github.event.schedule }}
+    if: github.event.workflow || github.event.schedule
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
@@ -97,7 +102,7 @@ jobs:
         env:
           COMMENT: ${{ inputs.staleComment }}
       - name: close issues marked with label
-        if: ${{ inputs.autocloseLabels }}
+        if: inputs.autocloseLabels
         run: |
           issues=`gh issue list -S "label:${{ inputs.autocloseLabels }}" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
           echo "Auto closing issues `echo $issues | wc -w` issues"
@@ -109,7 +114,7 @@ jobs:
         env:
           COMMENT: ${{ inputs.autocloseComment }}
   labelSync:
-    if: ${{ github.event.workflow || github.event.schedule }}
+    if: github.event.workflow || github.event.schedule
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
@@ -134,7 +139,7 @@ jobs:
         env:
           GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   syncFilesFromGithub:
-    if: ${{ (github.event.workflow || github.event.schedule) && github.repository != 'kumahq/.github' }}
+    if: (github.event.workflow || github.event.schedule) && github.repository != 'kumahq/.github'
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
