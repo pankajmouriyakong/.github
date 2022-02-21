@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: add labels
-        if: !contains(github.event.issue.labels.*.name, inputs.acceptedLabel)
+        if: "!contains(github.event.issue.labels.*.name, inputs.acceptedLabel)"
         run: |
           gh issue edit ${{ github.event.issue.number }} --add-label ${{ inputs.openLabels }} -R ${{ github.repository }}
       - name: add comment
