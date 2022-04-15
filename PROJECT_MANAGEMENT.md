@@ -11,14 +11,22 @@ In this meeting we will iterate over each repo in the kumahq github organization
 - Look at all tickets with `triage/pending` and take the following actions:
   - Set accurate `kind/*` and `area/*` labels
   - If a ticket is unclear set `triage/needs-information`
+  - If a ticket needs someone to try to reproduce `triage/needs-reproducing`
   - If a similar ticket already exists set `triage/duplicated` add a comment with the original ticket and close the newest ticket
-  - If a ticket looks good, set `triage/accepted`. A ticket being accepted doesn’t mean someone will work on it, just that it’s looking good. However, a closed ticket with `triage/accepted` is work that was actually done.
-- Look at all tickets with `triage/stale` and either remove the stale label if we think it’s still a valid ticket or set `triage/rotten` which will close the ticket
+  - If a ticket looks good, set `triage/accepted`. A ticket being accepted doesn’t mean someone will work on it, just that it’s looking good. However, a closed ticket with `triage/accepted` is work that was actually done. On these ticket we will often add information about possible implementations or area.
 
-Here are the github search to do this:
+[all `triage/pending` issues in kumahq github search](https://github.com/search?l=&q=user%3Akumahq+label%3Atriage%2Fpending+state%3Aopen&type=issues)
 
-- [all `triage/pending` issues in kumahq](https://github.com/search?l=&q=user%3Akumahq+label%3Atriage%2Fpending+state%3Aopen&type=issues)
-- [all `triage/stale` issues in kumahq](https://github.com/search?l=&q=user%3Akumahq+label%3Atriage%2Fstale+state%3Aopen&type=issues)
+### Stale tickets
+
+It's the responsability of the maintainers to review tickets with `triage/stale`.
+Maintainers can do these things to deal with stale issues:
+
+- Close it with a comment explaining why it's being closed.
+- Remove the stale label if they think this issue is still releavant and not worth more discussion.
+- Replace `triage/stale` with `triage/pending` to have the ticket be rediscussed at the next triage meeting.
+
+[all `triage/stale` issues in kumahq github search](https://github.com/search?l=&q=user%3Akumahq+label%3Atriage%2Fstale+state%3Aopen&type=issues)
 
 ## Tooling
 
