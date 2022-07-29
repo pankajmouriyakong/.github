@@ -82,7 +82,7 @@ jobs:
       - name: close issues marked with label
         run: |
           gh issue edit ${{ github.event.issue.number }} --remove-label ${{ inputs.openLabels }} -R ${{ github.repository }}
-          gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }}
+          gh api -X PATCH repos/${{ github.repository }}/issues/${{ github.event.issue.number }} -f state=closed -f state_reason=not_planned
   periodicCleanup:
     needs: labelSync
     if: github.event.workflow || github.event.schedule
