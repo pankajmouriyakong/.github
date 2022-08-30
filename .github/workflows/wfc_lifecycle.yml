@@ -30,7 +30,7 @@ on:
       daysBeforeStale:
         description: "The number of days an issue has to be unmodified before being applied the labels"
         type: number
-        default: 60
+        default: 90
         required: false
       staleLabel:
         description: "A label to add when an issue is staled"
@@ -41,8 +41,8 @@ on:
         type: string
         description: "A comment to add to the issue when marking as stale"
         default: |
-          This issue was inactive for 30 days it will be reviewed in the next triage meeting and might be closed.
-          If you think this issue is still relevant please comment on it promptly or attend the next triage meeting.
+          This issue was inactive for 90 days. It will be reviewed in the next triage meeting and might be closed.
+          If you think this issue is still relevant, please comment on it or attend the next triage meeting.
         required: false
       filesToSync:
         type: string
@@ -52,7 +52,7 @@ on:
 
 jobs:
   open:
-    if: (github.event.action == 'reopened' || github.event.action == 'opened') 
+    if: (github.event.action == 'reopened' || github.event.action == 'opened')
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
