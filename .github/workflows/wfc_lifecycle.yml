@@ -92,6 +92,10 @@ jobs:
     steps:
       - name: mark issues as stale
         run: |
+          if ! gh issue list --limit 1 --repo ${{ github.repository }} > /dev/null 2>&1; then
+            exit 0
+          fi
+
           before=`date -d '${{ inputs.daysBeforeStale }} days ago' --iso-8601`
           echo "Getting all issues untouched since: $before"
           issues=`gh issue list -S "-label:${{ inputs.staleLabel }} updated:<$before" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
@@ -105,6 +109,10 @@ jobs:
       - name: close issues marked with label
         if: inputs.autocloseLabels
         run: |
+          if ! gh issue list --limit 1 --repo ${{ github.repository }} > /dev/null 2>&1; then
+            exit 0
+          fi
+
           issues=`gh issue list -S "label:${{ inputs.autocloseLabels }}" -s open -R ${{ github.repository }} --json number -t '{{range .}}{{.number}} {{end}}'`
           echo "Auto closing issues `echo $issues | wc -w` issues"
           for issue in $issues; do
@@ -123,11 +131,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: install gh groomer
         run: |
-          if [[ `git diff --name-only  "@{24 hours ago}" "@{now}" -- org_labels.yml labels.yml`  ]]; then
+          if git diff --name-only  "@{24 hours ago}" "@{now}" -- org_labels.yml labels.yml; then
             echo "Label files didn't change skipping label sync"
           fi
 
-          gh release download -R lahabana/github-pm-groomer  -p '*Linux_x86*'
+          gh release download -R lahabana/github-pm-groomer -p '*Linux_x86*'
           tar -xf github-pm-groomer_*_Linux_x86_64.tar.gz
           if [[ -f org_labels.yml ]]; then
             echo "Syncing org labels"
