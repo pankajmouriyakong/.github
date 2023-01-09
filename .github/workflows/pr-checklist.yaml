@@ -1,0 +1,13 @@
+name: pr-checklist
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  pr-mgmt:
+    uses: kumahq/.github/.github/workflows/wfc_pr_management.yml@main
+    with:
+      comment: |
+        Cool checklist yo!!!
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}

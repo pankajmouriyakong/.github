@@ -1,0 +1,43 @@
+on:
+  workflow_call:
+    inputs:
+      matchLabel:
+        description: "A set of labels to match PR against"
+        type: string
+        required: false
+      approve:
+        description: "Whether the PR should be auto approved"
+        type: boolean
+        required: false
+      merge:
+        description: "Whether the PR should be auto merged"
+        type: boolean
+        required: false
+      comment:
+        description: "Whether we should comment the actions we do"
+        type: string
+        required: false
+    secrets:
+      github-token:
+        description: 'GitHub Token'
+        required: true
+jobs:
+  open:
+    if: github.event.pull_request && (inputs.matchLabel == '' || contains(github.event.pull_request.labels.*.name, inputs.matchLabel))
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.github-token }}
+    steps:
+      - name: approve
+        if: inputs.approve
+        run: |
+          gh pr review ${{ github.event.pull_request.number }} -a -R ${{ github.repository }} -b "Auto approved by PR [action](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+      - name: merge
+        if: inputs.merge
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} -b "Enabling auto merge by PR [action](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" -R ${{ github.repository }}
+          gh pr merge ${{ github.event.pull_request.number }} --auto --squash -R ${{ github.repository }}
+      - name: comment
+        if: inputs.comment
+        run:
+          gh pr comment ${{ github.event.pull_request.number }} -R ${{ github.repository }} -b "${{ inputs.comment }}"
