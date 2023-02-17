@@ -21,6 +21,9 @@ on:
       github-token:
         description: 'GitHub Token'
         required: true
+      github-token-approve:
+        description: 'GitHub Token to approve (if missing github-token is used for everything)'
+        required: false
 jobs:
   open:
     if: github.event.pull_request && (inputs.matchLabel == '' || contains(github.event.pull_request.labels.*.name, inputs.matchLabel))
@@ -30,6 +33,8 @@ jobs:
     steps:
       - name: approve
         if: inputs.approve
+        env:
+          GITHUB_TOKEN: ${{  secrets.github-token-approve || secrets.github-token }}
         run: |
           gh pr review ${{ github.event.pull_request.number }} -a -R ${{ github.repository }} -b "Auto approved by PR [action](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
       - name: merge
