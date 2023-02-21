@@ -28,21 +28,21 @@ jobs:
   open:
     if: github.event.pull_request && (inputs.matchLabel == '' || contains(github.event.pull_request.labels.*.name, inputs.matchLabel))
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.github-token }}
     steps:
       - name: approve
-        if: inputs.approve
+        if: fromJSON(inputs.approve)
         env:
           GITHUB_TOKEN: ${{  secrets.github-token-approve || secrets.github-token }}
         run: |
           gh pr review ${{ github.event.pull_request.number }} -a -R ${{ github.repository }} -b "Auto approved by PR [action](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
       - name: merge
-        if: inputs.merge
+        if: fromJSON(inputs.merge)
         run: |
-          gh pr comment ${{ github.event.pull_request.number }} -b "Enabling auto merge by PR [action](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" -R ${{ github.repository }}
           gh pr merge ${{ github.event.pull_request.number }} --auto --squash -R ${{ github.repository }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.github-token }}
       - name: comment
         if: inputs.comment
-        run:
-          gh pr comment ${{ github.event.pull_request.number }} -R ${{ github.repository }} -b "${{ inputs.comment }}"
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: inputs.comment
