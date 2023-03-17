@@ -73,7 +73,7 @@ The best way to reach us with a question when contributing is to ask on:
 
 * The original github issue
 * The developer mailing list
-* [Kuma Slack #developer](https://chat.kuma.io/) 
+* [Kuma Slack #developer](https://join.slack.com/t/kuma-mesh/shared_invite/zt-1rcll3y6t-DkV_CAItZUoy0IvCwQ~jlQ) 
 
 
 ## Pull Request Lifecycle
