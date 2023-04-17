@@ -48,7 +48,12 @@ on:
         type: string
         description: "The list of files to sync from the community repo"
         required: false
-        default: "CODE_OF_CONDUCT.md,LICENSE,SECURITY.md,org_labels.yml"
+        default: "CODE_OF_CONDUCT.md,LICENSE,SECURITY.md,meta_org.yml,CODEOWNERS"
+      filesToIgnore:
+        type: string
+        description: "list of files to ignore from syncing from the community repo"
+        required: false
+        default: ""
 
 jobs:
   open:
@@ -84,7 +89,7 @@ jobs:
           gh issue edit ${{ github.event.issue.number }} --remove-label ${{ inputs.openLabels }} -R ${{ github.repository }}
           gh api -X PATCH repos/${{ github.repository }}/issues/${{ github.event.issue.number }} -f state=closed -f state_reason=not_planned
   periodicCleanup:
-    needs: labelSync
+    needs: syncMeta
     if: github.event.workflow || github.event.schedule
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -122,7 +127,7 @@ jobs:
           done
         env:
           COMMENT: ${{ inputs.autocloseComment }}
-  labelSync:
+  syncMeta:
     if: github.event.workflow || github.event.schedule
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -137,6 +142,7 @@ jobs:
 
           gh release download -R lahabana/github-pm-groomer -p '*Linux_x86*'
           tar -xf github-pm-groomer_*_Linux_x86_64.tar.gz
+          # Kept for backward compatibility
           if [[ -f org_labels.yml ]]; then
             echo "Syncing org labels"
             ./github-pm-groomer label-sync -p org_labels.yml -r ${{ github.repository }}
@@ -144,6 +150,14 @@ jobs:
           if [[ -f labels.yml ]]; then
             echo "Syncing repo labels"
             ./github-pm-groomer label-sync -p labels.yml -r ${{ github.repository }}
+          fi
+          if [[ -f meta_org.yml ]]; then
+            echo "Syncing org meta"
+            ./github-pm-groomer meta-sync -p meta_org.yml -r ${{ github.repository }}
+          fi
+          if [[ -f meta_repo.yml ]]; then
+            echo "Syncing repo meta"
+            ./github-pm-groomer meta-sync -p meta_repo.yml -r ${{ github.repository }}
           fi
         env:
           GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -157,7 +171,11 @@ jobs:
       - name: Sync files from kumahq/.github
         run: |
           for f in `echo '${{ inputs.filesToSync }}' | tr "," " "`; do
-            gh api /repos/kumahq/.github/contents/${f}  -t '{{.content}}' | base64 -d > ${f}
+            if echo ',${{ inputs.filesToIgnore }},' | grep -q ",${f},"; then
+              echo "${f} is ignored, not syncing it"
+            else
+              gh api /repos/kumahq/.github/contents/${f}  -t '{{.content}}' | base64 -d > ${f}
+            fi
           done
       - name: "Create Pull Request"
         uses: peter-evans/create-pull-request@v3
