@@ -1,0 +1,67 @@
+name: PR management composite
+description: Approve and merge Kuma-related PRs
+inputs:
+  matchLabel:
+    description: "A set of labels to match PR against"
+    required: false
+  approve:
+    description: "Whether the PR should be auto approved"
+    required: false
+    default: 'false'
+  merge:
+    description: "Whether the PR should be auto merged"
+    required: false
+    default: 'false'
+  comment:
+    description: "Whether we should comment the actions we do"
+    required: false
+    default: 'false'
+  github-token:
+    description: 'GitHub Token'
+    required: true
+  github-token-approve:
+    description: 'GitHub Token to approve (if missing github-token is used for everything)'
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: approve
+      if: >
+        inputs.approve == 'true' 
+        && github.event.pull_request 
+        && (
+          inputs.matchLabel == '' 
+          || contains(github.event.pull_request.labels.*.name, inputs.matchLabel)
+        )
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token-approve || inputs.github-token }}
+      run: |
+        # Approve
+        gh pr review ${{ github.event.pull_request.number }} -a -R ${{ github.repository }} \
+          -b "Auto approved by PR [action](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+    - name: merge
+      if: >
+        inputs.merge == 'true'
+        && github.event.pull_request 
+        && (
+          inputs.matchLabel == '' 
+          || contains(github.event.pull_request.labels.*.name, inputs.matchLabel)
+        )
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        # Merge
+        gh pr merge ${{ github.event.pull_request.number }} --auto --squash -R ${{ github.repository }}
+    - name: comment
+      if: >
+        inputs.merge == 'true'
+        && github.event.pull_request 
+        && (
+          inputs.matchLabel == '' 
+          || contains(github.event.pull_request.labels.*.name, inputs.matchLabel)
+        )
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        message: ${{ inputs.comment }}
