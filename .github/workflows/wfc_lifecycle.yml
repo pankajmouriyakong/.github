@@ -27,6 +27,12 @@ on:
         default: |
           Automatically closing the issue due to having one of the "closed state label".
         required: false
+      unautocloseComment:
+        type: string
+        description: "A comment to add to the issue when removing close labels after a reopen"
+        default: |
+          Removing closed state labels due to the issue being reopened.
+        required: false
       daysBeforeStale:
         description: "The number of days an issue has to be unmodified before being applied the labels"
         type: number
@@ -88,6 +94,20 @@ jobs:
         run: |
           gh issue edit ${{ github.event.issue.number }} --remove-label ${{ inputs.openLabels }} -R ${{ github.repository }}
           gh api -X PATCH repos/${{ github.repository }}/issues/${{ github.event.issue.number }} -f state=closed -f state_reason=not_planned
+  removeAutoclose:
+    if: github.event.action == 'reopened' && contains(inputs.autocloseLabels, github.event.label.name)
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: comment on issue
+        run: |
+          gh issue comment ${{ github.event.issue.number }} -R ${{ github.repository }} --body "$COMMENT"
+        env:
+          COMMENT: ${{ inputs.unautocloseComment }}
+      - name: remove auto close labels
+        run: |
+          gh issue edit ${{ github.event.issue.number }} --remove-label ${{ inputs.autocloseLabels }} -R ${{ github.repository }}
   periodicCleanup:
     needs: syncMeta
     if: github.event.workflow || github.event.schedule
