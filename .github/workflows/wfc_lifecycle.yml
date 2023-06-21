@@ -54,7 +54,7 @@ on:
         type: string
         description: "The list of files to sync from the community repo"
         required: false
-        default: "CODE_OF_CONDUCT.md,LICENSE,SECURITY.md,meta_org.yml,CODEOWNERS"
+        default: "CODE_OF_CONDUCT.md,LICENSE,SECURITY.md,meta_org.yml,CODEOWNERS,GOVERNANCE.md,CONTRIBUTING.md"
       filesToIgnore:
         type: string
         description: "list of files to ignore from syncing from the community repo"
