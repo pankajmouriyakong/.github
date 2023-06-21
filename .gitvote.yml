@@ -28,10 +28,8 @@
 automation:
   enabled: true
   rules:
-    - patterns: ["GOVERNANCE.md"]
-      profile: steering-committee
-    - patterns: ["OWNERS.md"]
-      profile: default 
+    - patterns: ["GOVERNANCE.md", "OWNERS.md"]
+      profile: default
 
 # Configuration profiles (required)
 #
