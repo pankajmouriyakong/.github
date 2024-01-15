@@ -191,7 +191,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: github-app-token
-        if: ${{ secrets.app_id }}
+        env:
+          APP_ID: ${{ secrets.app_id }}
+        if: ${{ env.APP_ID }}
         uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
         with:
           app_id: ${{ secrets.app_id }}
