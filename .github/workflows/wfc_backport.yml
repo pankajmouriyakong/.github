@@ -43,6 +43,9 @@ jobs:
           TARGET_BRANCHES=$(gh api /repos/${{ github.repository }}/contents/${{ inputs.branchFilePath }} --jq '.content | @base64d' | jq  -cM '.[:index("${{ github.event.pull_request.base.ref }}")]')
           echo "branches=${TARGET_BRANCHES}" >> $GITHUB_OUTPUT
   open-prs:
+    permissions:
+      contents: read  # for actions/checkout to fetch code
+      pull-requests: write  # for marocchino/sticky-pull-request-comment to create or update PR comment
     needs:
       - build-matrix
     strategy:
@@ -58,7 +61,7 @@ jobs:
       SHA: ${{ github.event.pull_request.merge_commit_sha }}
       TARGET_BRANCH: ${{ matrix.branch }}
     steps:
-      - uses: marocchino/sticky-pull-request-comment@v2
+      - uses: marocchino/sticky-pull-request-comment@efaaab3fd41a9c3de579aba759d2552635e590fd # v2.8.0
         with:
           append: true
           message: backporting to ${{ matrix.branch }} with [action](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
@@ -70,7 +73,7 @@ jobs:
 # uncomment to try without the github app
 #        run: |
 #          echo "token=${{ github.token }}" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.6.0
         with:
           ref: ${{ env.TARGET_BRANCH }}
           fetch-depth: 0
@@ -94,7 +97,7 @@ jobs:
             git add .
             git cherry-pick --continue
           fi
-      - uses: peter-evans/create-pull-request@v5
+      - uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5.0.2
         with:
           title: "${{ env.PR_TITLE }} (backport of #${{ env.PR_NUMBER }})"
           signoff: true
