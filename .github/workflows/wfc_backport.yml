@@ -73,7 +73,7 @@ jobs:
 # uncomment to try without the github app
 #        run: |
 #          echo "token=${{ github.token }}" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.6.0
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: ${{ env.TARGET_BRANCH }}
           fetch-depth: 0
