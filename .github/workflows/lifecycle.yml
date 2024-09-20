@@ -9,6 +9,12 @@ on:
       - opened
       - labeled
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  actions: read
+
 jobs:
   lifecycle:
     uses: kumahq/.github/.github/workflows/wfc_lifecycle.yml@main
